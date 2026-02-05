@@ -1,4 +1,4 @@
-from src.predictive_analytics_system.hello import hello
+from predictive_analytics_system.hello import hello
 
 
 def test_hello() -> None:
