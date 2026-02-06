@@ -41,7 +41,7 @@ def validate_raw_data(df: pd.DataFrame) -> None:
     if df.empty:
         raise ValueError("Dataset is empty")
 
-    required_columns = {"customerID", "Churn Label"}
+    required_columns = {"customerID", "Churn"}
     missing_cols = required_columns - set(df.columns)
     if missing_cols:
         raise ValueError(f"Missing required columns: {missing_cols}")
