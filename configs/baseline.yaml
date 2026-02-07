@@ -3,9 +3,10 @@ data:
   random_state: 42
 
 model:
-  type: logistic_regression
-  max_iter: 1000
-  class_weight: balanced
+  type: gradient_boosting
+  n_estimators: 200
+  learning_rate: 0.05
+  max_depth: 3
 
 evaluation:
   metric: roc_auc
