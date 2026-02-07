@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import joblib
+import pandas as pd
 import yaml
 from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LogisticRegression
@@ -20,6 +21,36 @@ def load_config(path: Path) -> dict:
         return yaml.safe_load(f)
 
 
+def add_engineered_features(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+
+    # Tenure buckets
+    df["tenure_bucket"] = pd.cut(
+        df["tenure"],
+        bins=[0, 12, 24, 48, 100],
+        labels=["0-12", "12-24", "24-48", "48+"],
+        include_lowest=True,
+    ).astype("category")
+
+    # Contract stability
+    df["contract_stability"] = df["Contract"].map(
+        {
+            "Month-to-month": "low",
+            "One year": "medium",
+            "Two year": "high",
+        }
+    )
+
+    # Charges ratio
+    df["charges_per_tenure"] = df["MonthlyCharges"] / (df["tenure"] + 1)
+
+    # Service flags
+    df["has_internet"] = df["InternetService"] != "No"
+    df["has_phone"] = df["PhoneService"] == "Yes"
+
+    return df
+
+
 def train_baseline_model(config_path: Path) -> float:
     config = load_config(config_path)
 
@@ -29,12 +60,13 @@ def train_baseline_model(config_path: Path) -> float:
     model_cfg = config["model"]
 
     df = load_and_validate_raw_data()
+    df = add_engineered_features(df)
 
     X = df.drop(columns=["Churn", "customerID"])
     y = (df["Churn"] == "Yes").astype(int)
 
-    categorical_features = X.select_dtypes(include=["object", "string"]).columns
-    numerical_features = X.select_dtypes(exclude=["object", "string"]).columns
+    categorical_features = X.select_dtypes(include=["object", "string", "category", "bool"]).columns
+    numerical_features = X.select_dtypes(exclude=["object", "string", "category", "bool"]).columns
 
     preprocessor = ColumnTransformer(
         transformers=[
