@@ -69,3 +69,9 @@ Key findings from exploratory analysis:
   before modeling.
 
 These findings informed preprocessing and model design decisions.
+
+## How to Run
+
+### Train the model
+```bash
+python -m predictive_analytics_system.train --config configs/baseline.yaml
