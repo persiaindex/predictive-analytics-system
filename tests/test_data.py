@@ -2,7 +2,7 @@ from predictive_analytics_system.data import load_and_validate_raw_data
 
 df = load_and_validate_raw_data()
 print(df.shape)
-print(df["Churn"].value_counts()[0:2])
+print(df["Churn"].value_counts())
 
 
 def test_dataLoad() -> None:
