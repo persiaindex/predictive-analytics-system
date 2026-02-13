@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import joblib
+import yaml
 from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
@@ -14,14 +15,25 @@ ARTIFACTS_DIR = Path("artifacts")
 ARTIFACTS_DIR.mkdir(exist_ok=True)
 
 
-def train_baseline_model(random_state: int = 42) -> float:
+def load_config(path: Path) -> dict:
+    with open(path) as f:
+        return yaml.safe_load(f)
+
+
+def train_baseline_model(config_path: Path) -> float:
+    config = load_config(config_path)
+
+    random_state = config["data"]["random_state"]
+
+    model_cfg = config["model"]
+
     df = load_and_validate_raw_data()
 
     X = df.drop(columns=["Churn", "customerID"])
     y = (df["Churn"] == "Yes").astype(int)
 
-    categorical_features = X.select_dtypes(include="object").columns
-    numerical_features = X.select_dtypes(exclude="object").columns
+    categorical_features = X.select_dtypes(include=["object", "string"]).columns
+    numerical_features = X.select_dtypes(exclude=["object", "string"]).columns
 
     preprocessor = ColumnTransformer(
         transformers=[
@@ -35,9 +47,8 @@ def train_baseline_model(random_state: int = 42) -> float:
     )
 
     model = LogisticRegression(
-        max_iter=1000,
-        class_weight="balanced",
-        n_jobs=1,
+        max_iter=model_cfg["max_iter"],
+        class_weight=model_cfg["class_weight"],
         random_state=random_state,
     )
 
@@ -67,5 +78,6 @@ def train_baseline_model(random_state: int = 42) -> float:
 
 
 if __name__ == "__main__":
-    score = train_baseline_model()
+    config_path = Path("configs/baseline.yaml")
+    score = train_baseline_model(config_path)
     print(f"Baseline ROC-AUC: {score:.4f}")
