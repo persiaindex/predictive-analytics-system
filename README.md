@@ -4,12 +4,14 @@ End-to-end machine learning project designed for real-world workflow:
 data validation → training pipeline → evaluation → inference API → Docker → CI.
 
 ## Goals
+
 - Build a reproducible ML pipeline in Python
 - Track experiments and results clearly
 - Provide a FastAPI inference service (CPU)
 - Use tests + linting + GitHub Actions CI
 
 ## Repo Structure
+
 - src/ - Python package source code
 - notebooks/ - EDA and experiments
 - configs/ - configuration files (YAML)
@@ -57,3 +59,15 @@ using a stratified random split based on the target variable.
 
 Stratification ensures that the proportion of churned customers
 is consistent across all splits.
+
+## Exploratory Data Analysis (EDA)
+
+Key findings from exploratory analysis:
+
+- The target variable (Churn) is moderately imbalanced.
+- Several features (e.g. contract type, tenure, monthly charges)
+  show strong correlation with churn.
+- Some columns require type conversion and missing-value handling
+  before modeling.
+
+These findings informed preprocessing and model design decisions.
