@@ -71,3 +71,6 @@ Key findings from exploratory analysis:
   before modeling.
 
 These findings informed preprocessing and model design decisions.
+
+## Project Status
+🚧 In progress
