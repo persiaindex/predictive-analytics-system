@@ -1,3 +1,4 @@
+import argparse
 from pathlib import Path
 
 import joblib
@@ -127,6 +128,14 @@ def train_baseline_model(config_path: Path) -> float:
 
 
 if __name__ == "__main__":
-    config_path = Path("configs/baseline.yaml")
-    score = train_baseline_model(config_path)
-    print(f"Baseline ROC-AUC: {score:.4f}")
+    parser = argparse.ArgumentParser(description="Train churn prediction model.")
+    parser.add_argument(
+        "--config",
+        type=Path,
+        default=Path("configs/baseline.yaml"),
+        help="Path to training config file.",
+    )
+    args = parser.parse_args()
+
+    score = train_baseline_model(args.config)
+    print(f"ROC-AUC: {score:.4f}")

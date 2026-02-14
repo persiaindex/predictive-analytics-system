@@ -72,5 +72,17 @@ Key findings from exploratory analysis:
 
 These findings informed preprocessing and model design decisions.
 
+## How to Run
+
+### Train the model
+```bash
+python -m predictive_analytics_system.train --config configs/baseline.yaml
+```
+
+### Evaluate the model
+```bash
+python -m predictive_analytics_system.evaluate --threshold 0.5
+```
+
 ## Project Status
 🚧 In progress
