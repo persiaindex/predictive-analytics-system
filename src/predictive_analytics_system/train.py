@@ -4,6 +4,7 @@ import joblib
 import pandas as pd
 import yaml
 from sklearn.compose import ColumnTransformer
+from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
@@ -80,11 +81,25 @@ def train_baseline_model(config_path: Path) -> float:
         ]
     )
 
-    model = LogisticRegression(
-        max_iter=model_cfg["max_iter"],
-        class_weight=model_cfg["class_weight"],
-        random_state=random_state,
-    )
+    model_type = model_cfg["type"]
+
+    if model_type == "logistic_regression":
+        model = LogisticRegression(
+            max_iter=model_cfg.get("max_iter", 1000),
+            class_weight=model_cfg.get("class_weight", "balanced"),
+            random_state=random_state,
+        )
+
+    elif model_type == "gradient_boosting":
+        model = HistGradientBoostingClassifier(
+            max_depth=model_cfg["max_depth"],
+            learning_rate=model_cfg["learning_rate"],
+            max_iter=model_cfg["n_estimators"],
+            random_state=random_state,
+        )
+
+    else:
+        raise ValueError(f"Unknown model type: {model_type}")
 
     pipeline = Pipeline(
         steps=[
